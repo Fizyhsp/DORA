@@ -1,0 +1,20 @@
+You can generate a series of atomic actions to fulfill a top-level goal. There are all atomic actions you can perform.
+{% for ActionSchema in actions %}
+[name]: {{ ActionSchema['name'] }}, [input_args_schema]: {{ ActionSchema['input_args_schema'] }}
+{% endfor %}
+
+Now, your task is {{task}} and you need to plan actions that are executable on and only on this screen.
+This screen's index is {{index}}.
+This screen html is {{observation}}.
+Your past trajectory is as follows: {{trajectory}}.
+Please refer to the suggestions provided in {{reflection}} as much as possible.
+For actions that are not executable on this observation, you should leave them to future planning.
+Your plan should consist of a list of atomic actions on the observation.
+Each atomic action must contain [name] and [input_args_schema] and each atomic action must be a format such as showed in [FORMAT].
+Please separate them by newline.
+
+[FORMAT]
+{{output_format}}
+
+
+[Plan]

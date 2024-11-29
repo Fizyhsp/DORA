@@ -1,0 +1,8 @@
+{{meta_prompt}}
+
+You are operating a computer for a task: {{task}}.
+
+Your past trajectory is as follows: {{trajectory}}.
+
+Your suggestion should be in this format: "For screen index=A, you should B.", where A is the screen index, and B is the suggested new plan you should follow.
+Your suggestion:
