@@ -1,0 +1,8 @@
+accelerate==1.1.1
+sentencepiece==0.2.0
+transformers==4.46.3
+openai==1.55.3
+fire==0.7.0
+tqdm==4.67.1
+gradio==5.7.1
+cma==4.0.0
