@@ -6,8 +6,6 @@ Code for paper Dynamic Optimization Prompt for Continuous Reflection of LLM-base
 <img src=pics/DORA_Framework.png  width="80%" height="60%">
 </p>
 
-## Getting Started
-
 ## Experiments Setup
 
 Install `Miniwob++` following instructions [here](https://github.com/alfworld/alfworld).
