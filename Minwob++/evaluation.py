@@ -2,10 +2,6 @@ import math
 import re
 import json
 import numpy as np
-from langchain import PromptTemplate
-from agents import ReflectionAgent
-from langchain.chat_models import ChatOpenAI
-from langchain.chains import LLMChain
 from utils import make_instance
 from envs import MiniwobEnv
 from check_action import check_action
@@ -91,17 +87,9 @@ def compute_cosine(text1, text2):
     return result
 
 
-def GetScore(prompt, task, memory, success_fail, instruction_id, success_id, iterations):
+def GetScore(agent, reflection_chain, prompt, task, memory, success_fail, instruction_id, success_id, iterations):
     """对生成的反思指令进行评估"""
-    llm = ChatOpenAI(openai_api_base="https://api.chatanywhere.com.cn/v1", temperature=0.5,
-                     openai_api_key="sk-4LbX8s4Tlb3UfNhyWEbyZZSFF6qqklBVQXs3sHZpdhMQpjeP",
-                     model_name="gpt-3.5-turbo-1106")
-    with open("prompts/reflection.txt", 'r') as f:
-        reflection_template = f.read()
-    reflection_prompt = PromptTemplate(template=reflection_template, input_variables=["meta_prompt", "task",
-                                                                                      "trajectory"],
-                                       template_format="jinja2")
-    reflection_chain = LLMChain(prompt=reflection_prompt, llm=llm)
+
     env: MiniwobEnv = make_instance(
         MiniwobEnv,
         EPISODE_MAX_TIME=100000000,
@@ -109,16 +97,6 @@ def GetScore(prompt, task, memory, success_fail, instruction_id, success_id, ite
         env_type="static",
     )
 
-    agent = ReflectionAgent(
-        name="llm_agent",
-        env=env,
-        api_base="https://api.chatanywhere.com.cn/v1",
-        api_key="sk-4LbX8s4Tlb3UfNhyWEbyZZSFF6qqklBVQXs3sHZpdhMQpjeP",
-        model_name="gpt-3.5-turbo-1106",
-        template="prompts/reflection_agent.txt",
-        task='',
-        proxy="127.0.0.1:7890",
-    )
     obs_buffer = {}
     traj_buffer = {}
     real_step = 0
