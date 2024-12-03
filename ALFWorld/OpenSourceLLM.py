@@ -3,37 +3,7 @@ import torch
 from evaluation import GetScore
 import json
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from langchain import PromptTemplate
-from agents import ReflectionAgent
-from langchain.chat_models import ChatOpenAI
-from langchain.chains import LLMChain
 
-
-def reflection_llm_init():
-    llm = ChatOpenAI(openai_api_base="https://api.chatanywhere.com.cn/v1", temperature=0.5,
-                     openai_api_key="sk-4LbX8s4Tlb3UfNhyWEbyZZSFF6qqklBVQXs3sHZpdhMQpjeP",
-                     model_name="gpt-3.5-turbo-1106")
-    with open("prompts/reflection.txt", 'r') as f:
-        reflection_template = f.read()
-    reflection_prompt = PromptTemplate(template=reflection_template, input_variables=["meta_prompt", "task",
-                                                                                      "trajectory"],
-                                       template_format="jinja2")
-    reflection_chain = LLMChain(prompt=reflection_prompt, llm=llm)
-    return reflection_chain
-
-
-def agent_init():
-    agent = ReflectionAgent(
-        name="llm_agent",
-        env=env,
-        api_base="https://api.chatanywhere.com.cn/v1",
-        api_key="sk-4LbX8s4Tlb3UfNhyWEbyZZSFF6qqklBVQXs3sHZpdhMQpjeP",
-        model_name="gpt-3.5-turbo-1106",
-        template="prompts/reflection_agent.txt",
-        task='',
-        proxy="127.0.0.1:7890",
-    )
-    return agent
 
 class OpenSourceLLMAPI:
     def __init__(self, init_prompt=None, vec_dim=None, tokens_num=None, model_hf_dir=None):
@@ -62,8 +32,6 @@ class OpenSourceLLMAPI:
         self.linear = torch.nn.Linear(vec_dim, self.tokens_num * self.hidden_size, bias=False)
         for p in self.linear.parameters():
             torch.nn.init.uniform_(p, -1, 1)
-        self.agent = agent_init()
-        self.reflection_chain = reflection_llm_init()
 
 
     def eval(self, prompt_embedding = None, llm_input = None, iterations = 0, args = None):
@@ -85,7 +53,7 @@ class OpenSourceLLMAPI:
         with open(args.task + '_prompt.json', 'a') as f:
             json.dump(prompt, f)
         #对指令进行评估得到评分
-        eval_score, prompt_score = GetScore(agent=self.agent, reflection_chain=self.reflection_chain, prompt=prompt, task=args.task, memory=self.memory, success_fail=self.success_fail, instruction_id=self.instruction_id, success_id=self.success_id, iterations=iterations)
+        eval_score, prompt_score = GetScore(prompt=prompt, task=args.task, memory=self.memory, success_fail=self.success_fail, instruction_id=self.instruction_id, success_id=self.success_id, iterations=iterations)
         eval_score = eval_score.sorted()[1][0]
 
         if eval_score >= self.best_eval_score:
